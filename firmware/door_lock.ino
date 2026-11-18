@@ -28,6 +28,8 @@
 #include <Arduino.h>
 #include <ESP32Servo.h>
 #include <WiFi.h>
+#include <HTTPClient.h>
+#include <WiFiClientSecure.h>
 #include "esp_sleep.h"
 #include "driver/rtc_io.h"
 // Battery state-of-charge estimation (discharge curves, interpolation,
@@ -215,12 +217,24 @@ static void notifyBatteryIfNeeded(battery::Level lv, float pct) {
     WiFi.mode(WIFI_OFF);
     return;
   }
-  // TODO: ここに通知送信処理を実装する（例：HTTP POST で Webhook を叩く）。
-  // 送る内容は「電池残量 pct%／段階」のみ。受信系は作らないこと（安全要件1）。
-  DBG("[notify] 送信スタブ: 電池 ");
-  DBG(pct, 0);
-  DBG("% / ");
-  DBGLN(batteryLevelName(lv));
+  // 通知送信（送信のみ）: NOTIFY_URL へ残量だけを JSON で HTTP POST する。
+  // 受信して操作する経路は作らない（安全要件1）。
+  String payload = String("{\"device\":\"door-lock-switch\",\"battery_percent\":") +
+                   String((int)(pct + 0.5f)) + ",\"level\":\"" +
+                   (lv == battery::Level::Low ? "low" : "replace") + "\"}";
+  WiFiClientSecure client;
+  // 宛先は自分の Webhook のみで、送る内容も残量だけのため証明書検証は行わない。
+  client.setInsecure();
+  HTTPClient http;
+  if (http.begin(client, NOTIFY_URL)) {
+    http.addHeader("Content-Type", "application/json");
+    int code = http.POST(payload);
+    DBG("[notify] POST result: ");
+    DBGLN(code);
+    http.end();
+  } else {
+    DBGLN("[notify] HTTP begin failed");
+  }
   WiFi.disconnect(true);
   WiFi.mode(WIFI_OFF);
   g_consumedMah += MAH_PER_NOTIFY;
