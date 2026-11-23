@@ -9,7 +9,7 @@ Design rationale and acceptance criteria: `docs/LIGHT_SWITCH.md`.
 |---|---|
 | `bracket.scad` | One-piece wall plate + shelf + servo cradle. Servo lies on its side (shaft axis horizontal, parallel to the wall) and is retained by a zip tie through the base slot (v0 retention). Corner holes let the same plate be screwed to a bench board for rig use. |
 | `pusher_arm.scad` | Arm that clamps over the stock servo horn. Default effective length 22 mm (see the stroke budget in the design doc). |
-| (next) `dummy_rocker.scad` | Spring-loaded dummy rocker for the bench rig; added once the bracket/arm fit is confirmed, so its pivot can reuse the measured bracket geometry. |
+| `dummy_rocker.scad` | Spring-loaded dummy rocker for the bench rig (Issue #13): a seesaw paddle (36 x 44 mm) on an M3 pivot in a shallow box, with internal tilt stops (about 3.8 mm travel at the paddle ends) and a pen-spring return behind the lower half. Set `part` to `box` / `paddle` / `assembled` to print or view each piece. Screws to the bench board at the rocker position. |
 
 ## Parameters to set before a final print
 
