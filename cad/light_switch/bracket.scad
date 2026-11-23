@@ -10,8 +10,9 @@
 // Units: mm. Servo dimensions are nominal SG90-class values; adjust the
 // body_* parameters to the actual unit before printing a final version.
 //
-// Render status: no CAD kernel was available in the build environment;
-// open in OpenSCAD and check the preview before slicing.
+// Render status: verified with OpenSCAD 2021.01 (Issue #12) - renders
+// as a single valid 2-manifold solid; exported bounding box is
+// 60.0 x 40.2 x 80.0 mm, matching the parameters below.
 
 // ---- Parameters ----
 plate_w = 60;          // wall plate width  (X)
@@ -50,13 +51,15 @@ module wall_plate() {
 }
 
 module shelf() {
-  // Horizontal shelf from the plate to the cradle base.
-  translate([-15, plate_t, base_z - shelf_t])
-    cube([30, base_y0 - plate_t, shelf_t]);
+  // Horizontal shelf from the plate to the cradle base. It embeds 1 mm
+  // into the plate, the cradle base footprint and the base slab so the
+  // union is a valid 2-manifold (face-only contact is not; Issue #12).
+  translate([-15, plate_t - 1, base_z - shelf_t])
+    cube([30, base_y0 - plate_t + 2, shelf_t + 1]);
   // Two stiffening ribs under the shelf.
   for (sx = [-1, 1])
-    translate([sx * 13 - 2, plate_t, base_z - shelf_t - 18])
-      cube([4, base_y0 - plate_t, 18 + shelf_t]);
+    translate([sx * 13 - 2, plate_t - 1, base_z - shelf_t - 18])
+      cube([4, base_y0 - plate_t + 2, 18 + shelf_t]);
 }
 
 module cradle() {

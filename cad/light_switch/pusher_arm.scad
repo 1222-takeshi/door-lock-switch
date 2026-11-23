@@ -8,8 +8,9 @@
 // default arm_len = 22 and a 55 deg swing, tip travel toward the wall is
 // about 9.7 mm.
 //
-// Render status: no CAD kernel was available in the build environment;
-// open in OpenSCAD and check the preview before slicing.
+// Render status: verified with OpenSCAD 2021.01 (Issue #12) - renders
+// cleanly as a single solid; exported bounding box is
+// 35.5 x 14.0 x 4.0 mm, matching the parameters below.
 
 // ---- Parameters ----
 arm_len = 22;      // hub centre to tip-pad centre (effective length)

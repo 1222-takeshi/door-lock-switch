@@ -25,10 +25,11 @@ Design rationale and acceptance criteria: `docs/LIGHT_SWITCH.md`.
 - Bracket prints plate-down; the shelf and cradle need no supports at
   the default dimensions if the overhangs are kept as modelled - check
   the slicer preview.
-- Render status: these sources were written without a CAD kernel in
-  the build environment and have not been rendered yet. Open them in
-  OpenSCAD, check the preview and the exported STL dimensions before
-  printing; treat the first print as a fit prototype.
+- Render status: verified with OpenSCAD 2021.01 (Issue #12). Both
+  models render as single valid solids; exported bounding boxes match
+  the design parameters (bracket 60.0 x 40.2 x 80.0 mm, arm
+  35.5 x 14.0 x 4.0 mm). Still treat the first print as a fit prototype
+  against the actual servo unit.
 
 ## Bench rig assembly
 
