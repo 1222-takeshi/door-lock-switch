@@ -1,6 +1,7 @@
 # サムターン錠＋照明スイッチ ファームウェア（door_lock.ino）
 
-ESP32（Arduino core）用のスケッチ骨子です。**コンパイル環境のない場所で書かれており未検証**です。実機でビルド確認とベンチ動作確認をしてから組み付けてください。
+This sketch targets ESP32 with the Arduino core. Run the build check below and
+verify operation on the bench before installing the hardware.
 
 計画書は `../PLAN.html` を参照。安全要件（遠隔は施錠のみ／手動が常に優先／故障・電池切れ時はフリー／施錠状態の検出）はコード構造にも反映されています。
 
@@ -69,6 +70,24 @@ ESP32 は deep sleep が常態で、次の4要因で起床し、処理後に再�
 4. **放電曲線テーブル**：初号機で「無負荷電圧のログ」と「実際に電池切れになるまでの日数・施錠回数」を取り、`CURVE_ALKALINE` / `CURVE_NIMH` と容量値を実態に寄せる
 5. **通知の有効化**：通知先（Webhook等）を決め、`WIFI_SSID` / `WIFI_PASSWORD` / `NOTIFY_URL` を設定し、`WIFI_NOTIFY_ENABLED` を true にして、notify スタブ内の送信処理を実装する。**受信系（操作コマンドの受け付け）は実装しないこと**
 
+## Firmware build check
+
+Install [Arduino CLI](https://docs.arduino.cc/arduino-cli/installation) and a
+host `g++` compiler. Set up the [Espressif board package](https://docs.espressif.com/projects/arduino-esp32/en/latest/installing.html)
+and ESP32Servo. The build was verified with Arduino CLI 1.6.0 and the
+versions shown below.
+
+```sh
+esp32_index=https://espressif.github.io/arduino-esp32/package_esp32_index.json
+arduino-cli core update-index --additional-urls "$esp32_index"
+arduino-cli core install esp32:esp32@4.0.0 --additional-urls "$esp32_index"
+arduino-cli lib install ESP32Servo@3.2.1
+```
+
+From the repository root, run `./tools/build_check.sh`. It compiles the sketch
+for ESP32 Dev Module (`esp32:esp32:esp32`), then builds and runs the host battery
+tests. The script exits nonzero and names the failed stage if a check fails.
+
 ## Module layout / host tests (battery estimation)
 
 The battery state-of-charge estimation logic has been extracted from
@@ -88,9 +107,8 @@ g++ -std=c++11 -Wall -Wextra -I . tests/test_battery.cpp -o /tmp/test_battery
 /tmp/test_battery   # prints "test_battery: all tests passed"
 ```
 
-Note: the tests exercise `battery_estimator.h` only. `door_lock.ino` itself
-remains **uncompiled and unverified** (no Arduino build environment here);
-verify it on real hardware as described in the checklist below. Calibration
+The host tests exercise `battery_estimator.h`. Use the checklist below to
+verify `door_lock.ino` on real hardware. Calibration
 values (curve tables, capacity, per-event mAh costs, thresholds) are still
 provisional and must be fitted to measurements; the curve/capacity values now
 live in `battery_estimator.h`, while per-event costs and thresholds remain in
@@ -98,7 +116,7 @@ the parameter block at the top of `door_lock.ino`.
 
 ## 実機で最初に確認すべきこと
 
-- [ ] ビルドが通ること（ESP32Servo のバージョン差異で API が変わっていないか）
+- [x] Sketch compiles for ESP32 Dev Module with the versions listed above.
 - [ ] MG946R 単体：回転方向と角度の対応、必要トルクでサムターンが回り切るか
 - [ ] 回し切りマイクロスイッチが施錠完了位置でのみ確実に入ること（チャタリング含む）
 - [ ] サーボ無通電時にサムターンが手で軽く回ること（手動優先・フリーの確認）
