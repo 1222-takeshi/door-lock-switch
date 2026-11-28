@@ -9,7 +9,9 @@ Design rationale and acceptance criteria: `docs/LIGHT_SWITCH.md`.
 |---|---|
 | `bracket.scad` | One-piece wall plate + shelf + servo cradle. Servo lies on its side (shaft axis horizontal, parallel to the wall) and is retained by a zip tie through the base slot (v0 retention). Corner holes let the same plate be screwed to a bench board for rig use. |
 | `pusher_arm.scad` | Arm that clamps over the stock servo horn. Default effective length 22 mm (see the stroke budget in the design doc). |
-| `dummy_rocker.scad` | Spring-loaded dummy rocker for the bench rig (Issue #13): a seesaw paddle (36 x 44 mm) on an M3 pivot in a shallow box, with internal tilt stops (about 3.8 mm travel at the paddle ends) and a pen-spring return behind the lower half. Set `part` to `box` / `paddle` / `assembled` to print or view each piece. Screws to the bench board at the rocker position. |
+| `dummy_rocker.scad` | Spring-loaded dummy rocker for the bench rig (Issue #13): a seesaw paddle (46 x 92 mm, the measured target size) on an M3 pivot in a shallow box, with internal tilt stops (about 3.2 mm travel at the paddle ends) and a pen-spring return behind the lower half. Set `part` to `box` / `paddle` / `assembled` to print or view each piece. Screws to the bench board at the rocker position. |
+| `wall_bracket.scad` | Wall-mount bracket (design v1, Issue #18): adhesive pad beside the switch plate, shelf in front of the plate, servo base with the shaft at rocker-centre height about 35 mm out from the wall. Set `part` to `bracket` / `ghost` / `assembled`. |
+| `arm_two_spoke.scad` | Two-spoke arm (design v1, Issue #18): spokes at +/-45 deg with disc pads at 26 mm radius, pressing the seesaw rocker's upper and lower halves alternately. |
 
 ## Parameters to set before a final print
 
@@ -28,7 +30,9 @@ Design rationale and acceptance criteria: `docs/LIGHT_SWITCH.md`.
 - Render status: verified with OpenSCAD 2021.01 (Issue #12). Both
   models render as single valid solids; exported bounding boxes match
   the design parameters (bracket 60.0 x 40.2 x 80.0 mm, arm
-  35.5 x 14.0 x 4.0 mm). Still treat the first print as a fit prototype
+  35.5 x 14.0 x 4.0 mm). The v1 wall parts were verified the same way
+  (Issue #18): wall bracket 75.0 x 52.0 x 80.0 mm, two-spoke arm
+  10.0 x 34.3 x 46.8 mm. Still treat the first print as a fit prototype
   against the actual servo unit.
 
 ## Bench rig assembly

@@ -37,56 +37,66 @@ TBD are fixed on the bench (U6) or at the wall trial.
 ## Mechanism (v1)
 
 - The servo shaft is horizontal and parallel to the wall, at the height
-  of the rocker centre, about 33 mm out from the wall. The arm plane
+  of the rocker centre, about 35 mm out from the wall. The arm plane
   sits over the rocker edge region (about 20 mm right of centre), where
   the wide rocker can be pressed reliably.
-- The arm has two spokes at about +/-40 deg from the wall-pointing
-  direction, pads at 26 mm radius. Swinging the servo one way brings
-  the upper pad onto the rocker's upper half (press point about 17 mm
-  above centre); swinging the other way presses the lower half. Each
-  swing toggles the light; there is no pull-back mechanism.
-- At the rest (centre) position both pads clear the rocker face by
-  about 4 mm, so manual operation is unobstructed (hard requirement).
+- The arm has two spokes at about +/-45 deg from the wall-pointing
+  direction, with disc pads at 26 mm radius. A press swings the servo
+  about 11 deg toward one side: that side's pad meets the rocker half
+  at about 15-17 mm from the centre and drives it in (see the stroke
+  budget). Each swing toggles the light; there is no pull-back
+  mechanism.
+- At the rest (centre) position both pads clear the rocker face (about
+  2.6 mm to the flat face, about 1.4 mm to a fully out-tilted half),
+  so manual operation is unobstructed (hard requirement).
 - Firmware parameters: the v0 values (rest 20 deg, push 75 deg in
   `firmware/door_lock.ino`) are superseded by this geometry - centre
-  rest with about +/-40 deg presses, hold 300 ms. The exact angles are
+  rest with about +/-11 deg presses, hold 300 ms. The exact angles are
   set during bench tuning (U6) and updated in the firmware then.
 
 ## Stroke budget (v1)
 
-Geometry: shaft centre 33 mm out from the wall, rocker face at 9 mm,
-spoke radius R = 26 mm, spokes at +/-40 deg at rest.
+Geometry: shaft centre 35 mm out from the wall, rocker face at 9 mm,
+spoke radius R = 26 mm, spokes at +/-45 deg at rest, disc pads of
+radius 5 mm. (The first CAD render showed that a rectangular pad's
+corner would eat the rest clearance; the disc pad and these numbers
+replace the pad-centre estimates of the first v1 draft.)
 
-- Rest clearance: pad distance from the wall is
-  33 - 26 * cos(40 deg) = about 13.1 mm, i.e. about 4.1 mm clear of the
-  rocker face. Manual operation is unobstructed.
-- Press: rotating a spoke to point at the wall moves its pad to
-  33 - 26 = 7 mm from the wall. At the press point (17 mm from the
-  pivot) the rocker face starts at about 10.1 mm when that half is out
-  (9 mm + tilt) and needs about 1.6 mm of travel to toggle (about
-  1.1 mm to flat plus over-travel). The pad delivers about 3.1 mm -
-  roughly 1.5 mm of margin for pad compression and tolerances.
+- Rest clearance: the pad's closest point to the wall is
+  35 - (26 * cos(45 deg) + 5) = about 11.6 mm, i.e. about 2.6 mm clear
+  of the flat rocker face and about 1.4 mm clear of a fully out-tilted
+  half (face about 10.2 mm at the pad height). Manual operation is
+  unobstructed; the gap is fine-tuned with printed shims (1 mm steps),
+  not by firmware angles alone.
+- Press: the pad first touches the out-tilted half at a swing of about
+  5 deg and drives it about 1.6 mm by a swing of about 11 deg, which
+  matches the travel the press point (15-17 mm from the pivot) needs
+  to toggle: about 1.1 mm to flat plus over-travel. The swing is a
+  bench-tuned parameter (U6), so print tolerances and foam-tape
+  thickness land inside the tuning range.
 - Force estimate: an SG90-class servo is nominally about 1.8 kg cm at
   4.8 V, giving about 0.69 kg (about 6.8 N) at the 26 mm pad. Wide
   rockers of this type press with roughly 2-4 N (TBD, measured on the
   rig), so the margin is about 2x. If the rig shows a shortfall, a
-  22 mm spoke variant raises the force to about 8 N at the cost of
-  press margin; re-check the geometry before adopting it.
-- The rest gap is fine-tuned with printed shims (1 mm steps), not by
-  firmware angles alone.
+  shorter spoke variant raises the force at the cost of press margin;
+  re-check the geometry before adopting it.
 
 ## Pusher arm (v1)
 
 - Two-spoke printed arm clamped over the stock servo horn with screws;
-  the spline itself is not printed. Spokes at about +/-40 deg, pads at
-  26 mm radius, pad width 12 mm, thickness 4 mm, printed on the
-  Adventurer 3 (PLA/PETG for v1).
-- Pads carry a 2 mm silicone or felt layer: protects the rocker and
-  absorbs over-travel. Pad edges rounded (R3 or more).
-- A mechanical stop on the bracket limits the swing to about +/-45 deg
-  even if the servo is driven to a wrong angle.
-- CAD for the arm and the wall bracket is Issue #18; the bench-rig arm
-  (single spoke, PR #10) stays as the rig's force-measurement tool.
+  the spline itself is not printed. Spokes at about +/-45 deg, disc
+  pads (radius 5 mm, 10 mm wide) at 26 mm radius, arm thickness 4 mm,
+  printed on the Adventurer 3 (PLA/PETG for v1).
+- Pad faces carry a 2 mm silicone or felt layer: protects the rocker
+  and absorbs over-travel.
+- No mechanical stop is fitted in v1: the wall-bracket layout keeps
+  the whole swing region clear of bracket parts, and press depth is
+  bounded by the tuned firmware swing (about 11 deg) and the servo's
+  own torque.
+- CAD for the arm and the wall bracket: Issue #18
+  (`cad/light_switch/arm_two_spoke.scad`, `wall_bracket.scad`); the
+  bench-rig arm (single spoke, PR #10) stays as the rig's
+  force-measurement tool.
 
 ## Mounting (reversible)
 
