@@ -16,19 +16,20 @@ stands in for the real switch.
 
 | # | Part | Source (part=) | Size (mm) | Filament | Time |
 |---|---|---|---|---|---|
-| A1 | Wall bracket | `wall_bracket.scad` (`bracket`) | 75 x 52 x 80 | ~21 g | ~1.1 h |
+| A1 | Wall bracket | `wall_bracket.scad` (`bracket`) | 75 x 60 x 80 | ~24 g | ~1.2 h |
 | A2 | Two-spoke arm | `arm_two_spoke.scad` | 10 x 34 x 47 | ~3 g | ~0.2 h |
 | A3 | Dummy rocker box | `dummy_rocker.scad` (`box`) | 79 x 26 x 124 | ~35 g | ~1.8 h |
 | A4 | Dummy rocker paddle | `dummy_rocker.scad` (`paddle`) | 46 x 4 x 92 | ~12 g | ~0.6 h |
 
-Set A total: about 71 g, about 3.7 h.
+Set A total: about 74 g, about 3.8 h.
 
 Orientation and notes:
 
 - A1: pad back flat on the bed (rotate so the model's Y axis points
-  up). All other features become vertical walls in that orientation;
-  check the slicer preview for the servo-base underside.
-- A2: flat as modelled (thickness along the build Z). No supports.
+  up). Supports are needed under the shelf and servo-base overhangs;
+  enable them in the slicer.
+- A2: flat on the rocker-side face. No supports (the pads are flush
+  with the servo-side face).
 - A3: flange down, opening up, as modelled. The largest part; the
   lightening pockets are on the paddle, not the box.
 - A4: flat as modelled. Needs an M3 screw (pivot) and a pen-class

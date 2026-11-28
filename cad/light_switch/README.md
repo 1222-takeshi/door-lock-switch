@@ -31,8 +31,8 @@ Design rationale and acceptance criteria: `docs/LIGHT_SWITCH.md`.
   models render as single valid solids; exported bounding boxes match
   the design parameters (bracket 60.0 x 40.2 x 80.0 mm, arm
   35.5 x 14.0 x 4.0 mm). The v1 wall parts were verified the same way
-  (Issue #18): wall bracket 75.0 x 52.0 x 80.0 mm, two-spoke arm
-  10.0 x 34.3 x 46.8 mm. Still treat the first print as a fit prototype
+  (Issues #18, #24): wall bracket 75.0 x 60.0 x 80.0 mm, two-spoke
+  arm 10.0 x 34.4 x 46.8 mm. Still treat the first print as a fit prototype
   against the actual servo unit.
 
 ## Bench rig assembly
