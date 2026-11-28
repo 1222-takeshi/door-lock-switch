@@ -1,64 +1,86 @@
-/*
- * light_servo_bench.ino - bench-only test sketch for the light-switch
- * pusher (Issue #7). NOT for installation.
- *
- * Repeats one press cycle (rest -> push -> hold -> rest) every 4 s and
- * prints the cycle count, so the pusher geometry (arm length, rest gap,
- * angles) can be tuned on the bench rig with a dummy rocker. Sending
- * 'p' over serial triggers one extra cycle immediately.
- *
- * Angles and hold time mirror the provisional values in
- * firmware/door_lock.ino; tune them here first, then copy the result
- * back. No WiFi, no deep sleep, no lock-servo code.
- *
- * Unverified: written without a build environment, like the main
- * sketch. Compile it in the Arduino IDE before relying on it.
- *
- * Library: ESP32Servo (Arduino Library Manager).
- */
+// Bench-only test sketch for the light-switch servo (9 g, GPIO14).
+//
+// BENCH ONLY - not for installation. It drives the servo on a fixed
+// cycle so the pusher geometry can be tuned on the rig without
+// flashing the full firmware.
+//
+// Design v1 (docs/LIGHT_SWITCH.md): the arm has two spokes and rests
+// at the centre angle. A press swings the servo by PRESS_DELTA
+// degrees to one side (direction A) or the other (direction B),
+// holds, and returns to rest. Which direction presses the rocker's
+// upper half depends on how the horn is mounted - record it on the
+// rig during U6.
+//
+// Cycle: every 4 s, alternate A and B presses.
+// Serial commands (115200):
+//   'a' press direction A once    'b' press direction B once
+//   '+' / '-'  PRESS_DELTA +- 2 deg (range 4..30)
+//   'r' report current settings
+//
+// Status: compiles with the firmware build check toolchain
+// (esp32:esp32 core 4.0.0, ESP32Servo 3.2.1). Geometry values are
+// provisional until bench unit U6 fixes them.
 
-#include <Arduino.h>
 #include <ESP32Servo.h>
 
-static const int PIN_LIGHT_SERVO = 14;  // same pin as the main firmware
+static const int SERVO_PIN = 14;
+static const int REST_ANGLE = 90;     // centre rest (two-spoke arm)
+static const int HOLD_MS = 300;
+static const int STEP_MS_PER_DEG = 12;
+static const unsigned long CYCLE_MS = 4000;
 
-static const int REST_ANGLE = 20;       // tune on the rig
-static const int PUSH_ANGLE = 75;       // tune on the rig
-static const int MIN_US = 500;          // 9 g servo provisional range
-static const int MAX_US = 2400;
-static const uint32_t HOLD_MS = 300;
-static const uint32_t CYCLE_MS = 4000;
+static int pressDelta = 11;           // design v1 nominal swing
+static Servo servo;
+static int currentAngle = REST_ANGLE;
+static bool nextIsA = true;
 
-static Servo g_servo;
-static uint32_t g_cycles = 0;
+static void moveTo(int target) {
+  int step = (target > currentAngle) ? 1 : -1;
+  while (currentAngle != target) {
+    currentAngle += step;
+    servo.write(currentAngle);
+    delay(STEP_MS_PER_DEG);
+  }
+}
 
-static void pressOnce() {
-  g_servo.write(PUSH_ANGLE);
+static void press(bool dirA) {
+  int target = REST_ANGLE + (dirA ? pressDelta : -pressDelta);
+  Serial.printf("[bench] press %s: %d -> %d\n", dirA ? "A" : "B",
+                currentAngle, target);
+  moveTo(target);
   delay(HOLD_MS);
-  g_servo.write(REST_ANGLE);
-  delay(300);
-  g_cycles++;
-  Serial.print("[bench] press cycle ");
-  Serial.println(g_cycles);
+  moveTo(REST_ANGLE);
+  Serial.println("[bench] back to rest");
+}
+
+static void report() {
+  Serial.printf("[bench] rest=%d delta=%d hold=%dms\n", REST_ANGLE,
+                pressDelta, HOLD_MS);
 }
 
 void setup() {
   Serial.begin(115200);
-  delay(50);
-  g_servo.setPeriodHertz(50);
-  g_servo.attach(PIN_LIGHT_SERVO, MIN_US, MAX_US);
-  g_servo.write(REST_ANGLE);
-  Serial.println("[bench] light servo bench: rest position, cycling every 4 s, 'p' = press now");
+  servo.setPeriodHertz(50);
+  servo.attach(SERVO_PIN, 500, 2400);
+  servo.write(REST_ANGLE);
+  currentAngle = REST_ANGLE;
+  Serial.println("[bench] light servo bench v1 - bench only, not for installation");
+  report();
 }
 
 void loop() {
-  static uint32_t last = 0;
-  if (Serial.available() > 0) {
+  if (Serial.available()) {
     char c = (char)Serial.read();
-    if (c == 'p') pressOnce();
+    if (c == 'a') press(true);
+    else if (c == 'b') press(false);
+    else if (c == '+' && pressDelta < 30) { pressDelta += 2; report(); }
+    else if (c == '-' && pressDelta > 4) { pressDelta -= 2; report(); }
+    else if (c == 'r') report();
   }
+  static unsigned long last = 0;
   if (millis() - last >= CYCLE_MS) {
     last = millis();
-    pressOnce();
+    press(nextIsA);
+    nextIsA = !nextIsA;
   }
 }
