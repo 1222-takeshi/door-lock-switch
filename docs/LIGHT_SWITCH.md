@@ -1,9 +1,10 @@
 # Light-Switch Pusher Design (Issue #7)
 
-Status: design v0, written before the target switch is measured. Values
-marked TBD are fixed once a photo and dimensions of the target switch are
-available; everything else is designed to be adjustable so a first bench
-rig can be built before that.
+Status: design v1 (2026-11-28), updated with the measured target switch
+(bench unit U0, Issue #17). Design v0 assumed a single press point; the
+target rocker turned out to be a seesaw type, so v1 uses a two-spoke arm
+that presses the upper and lower halves alternately. Values still marked
+TBD are fixed on the bench (U6) or at the wall trial.
 
 ## Scope and safety
 
@@ -20,59 +21,85 @@ rig can be built before that.
 - Nothing is wired into the switch or the mains. The device sits outside
   the switch plate and can be removed without a trace.
 
-## Mechanism
+## Target switch (measured 2026-11-28)
 
-- The servo shaft is horizontal and parallel to the wall. The pusher arm
-  rotates in a plane perpendicular to the wall, so the arm tip travels
-  toward and away from the rocker face.
-- One press cycle: rest angle -> push angle -> hold -> rest angle. The
-  rocker toggles on each press; there is no pull-back mechanism.
-- Firmware parameters (provisional, in `firmware/door_lock.ino`):
-  rest 20 deg, push 75 deg, hold 300 ms, servo on GPIO14.
+- Plate: 70 x 120 mm (standard Japanese 1-gang wide plate; height read
+  directly against the ruler, width confirmed by ratio to the rocker).
+- Rocker: a single wide rocker (Panasonic Cosmo-series style, with the
+  pilot-lamp dot), about 46 x 92 mm, seesaw pivot at its centre. The
+  face sits about 9 mm proud of the wall (plate face about 6 mm).
+- The rocker toggles by pressing the upper half in or the lower half
+  in; end travel is about 3 mm at the ends (to be confirmed at the wall
+  trial). Pressing near the centre does nothing - the pivot is there.
+- Surroundings: open wall on the right of the plate; a door frame is
+  close on the left. The unit mounts on the right side.
 
-## Stroke budget
+## Mechanism (v1)
 
-Effective arm length L = 22 mm (shaft centre to pad centre), rotation
-55 deg (20 -> 75 deg). If the arm works between 60 deg and 25 deg from
-the wall plane, the tip travel toward the wall is
+- The servo shaft is horizontal and parallel to the wall, at the height
+  of the rocker centre, about 33 mm out from the wall. The arm plane
+  sits over the rocker edge region (about 20 mm right of centre), where
+  the wide rocker can be pressed reliably.
+- The arm has two spokes at about +/-40 deg from the wall-pointing
+  direction, pads at 26 mm radius. Swinging the servo one way brings
+  the upper pad onto the rocker's upper half (press point about 17 mm
+  above centre); swinging the other way presses the lower half. Each
+  swing toggles the light; there is no pull-back mechanism.
+- At the rest (centre) position both pads clear the rocker face by
+  about 4 mm, so manual operation is unobstructed (hard requirement).
+- Firmware parameters: the v0 values (rest 20 deg, push 75 deg in
+  `firmware/door_lock.ino`) are superseded by this geometry - centre
+  rest with about +/-40 deg presses, hold 300 ms. The exact angles are
+  set during bench tuning (U6) and updated in the firmware then.
 
-    L * (sin 60 - sin 25) = 22 * (0.866 - 0.423) = about 9.7 mm
+## Stroke budget (v1)
 
-Budget for that travel:
+Geometry: shaft centre 33 mm out from the wall, rocker face at 9 mm,
+spoke radius R = 26 mm, spokes at +/-40 deg at rest.
 
-| Item | Allowance |
-|---|---|
-| Rest gap (tip to rocker face) | about 4 mm |
-| Rocker press travel | about 4 mm (TBD, measure) |
-| Pad compression / margin | about 1.5 mm |
-
+- Rest clearance: pad distance from the wall is
+  33 - 26 * cos(40 deg) = about 13.1 mm, i.e. about 4.1 mm clear of the
+  rocker face. Manual operation is unobstructed.
+- Press: rotating a spoke to point at the wall moves its pad to
+  33 - 26 = 7 mm from the wall. At the press point (17 mm from the
+  pivot) the rocker face starts at about 10.1 mm when that half is out
+  (9 mm + tilt) and needs about 1.6 mm of travel to toggle (about
+  1.1 mm to flat plus over-travel). The pad delivers about 3.1 mm -
+  roughly 1.5 mm of margin for pad compression and tolerances.
 - Force estimate: an SG90-class servo is nominally about 1.8 kg cm at
-  4.8 V, giving roughly 0.8 kg (about 8 N) at a 22 mm tip. This is an
-  estimate from nominal catalogue values, not a measurement. The bench
-  rig test measures the real value; if it is short, shorten the arm
-  (L = 18 mm gives roughly 1.0 kg) or move the contact point further
-  from the rocker pivot.
-- The rest gap is set with printed shims (1 mm steps) and slots in the
-  bracket, not by firmware angles alone.
+  4.8 V, giving about 0.69 kg (about 6.8 N) at the 26 mm pad. Wide
+  rockers of this type press with roughly 2-4 N (TBD, measured on the
+  rig), so the margin is about 2x. If the rig shows a shortfall, a
+  22 mm spoke variant raises the force to about 8 N at the cost of
+  press margin; re-check the geometry before adopting it.
+- The rest gap is fine-tuned with printed shims (1 mm steps), not by
+  firmware angles alone.
 
-## Pusher arm
+## Pusher arm (v1)
 
-- Printed arm clamped over the stock servo horn with screws; the spline
-  itself is not printed.
-- Overall length about 28 mm, width 10 mm tapering to a 12 mm tip pad,
-  thickness 4 mm, printed on the Adventurer 3 (PLA/PETG for v0).
-- Tip pad carries a 2 mm silicone or felt pad: protects the rocker and
-  absorbs over-travel. Tip edges rounded (R3 or more).
-- A mechanical stop on the bracket limits the maximum press depth even
-  if the servo is driven to a wrong angle.
+- Two-spoke printed arm clamped over the stock servo horn with screws;
+  the spline itself is not printed. Spokes at about +/-40 deg, pads at
+  26 mm radius, pad width 12 mm, thickness 4 mm, printed on the
+  Adventurer 3 (PLA/PETG for v1).
+- Pads carry a 2 mm silicone or felt layer: protects the rocker and
+  absorbs over-travel. Pad edges rounded (R3 or more).
+- A mechanical stop on the bracket limits the swing to about +/-45 deg
+  even if the servo is driven to a wrong angle.
+- CAD for the arm and the wall bracket is Issue #18; the bench-rig arm
+  (single spoke, PR #10) stays as the rig's force-measurement tool.
 
 ## Mounting (reversible)
 
 - Primary (v1): removable adhesive strips (re-peelable type) on the flat
-  wall beside the switch plate; bracket back about 60 x 80 mm. Only the
-  servo unit (target under 50 g) sits on the wall; the ESP32 and battery
-  box live in a separate case connected by a cable, so battery changes
-  do not disturb the mount.
+  wall beside the switch plate, on the right side (the left side is
+  close to a door frame); bracket back about 60 x 80 mm. Only the servo
+  unit (target under 50 g) sits on the wall; the ESP32 and battery box
+  live in a separate case connected by a cable, so battery changes do
+  not disturb the mount.
+- Note: the bench-rig bracket (PR #10) is centred on the rocker and
+  would overlap the 70 x 120 mm switch plate on the wall; the wall
+  bracket is a separate variant (Issue #18) whose adhesive pad sits
+  beside the plate and whose servo hub reaches over the rocker edge.
 - Candidate (v2): a bracket sharing the switch plate frame screws.
   Japanese 1-gang mounting frames use an 83.5 mm screw pitch as the
   standard, but the actual screw type and pitch on the target plate
@@ -82,20 +109,23 @@ Budget for that travel:
   Test the adhesive on a small inconspicuous area first: weak wallpaper
   can tear on removal.
 
-## Parameters waiting on the target switch (TBD)
+## Parameters from the target switch
 
-| Parameter | Needed for | Source |
+| Parameter | Value | Source |
 |---|---|---|
-| Plate width x height, rocker count | Bracket outline | Photo + tape measure |
-| Rocker width x height, pivot side | Arm length, contact point | Photo + tape measure |
-| Rocker press travel and force | Stroke budget, arm length | Bench measurement |
-| Clear space above/beside the plate | Servo placement | Photo |
+| Plate width x height | 70 x 120 mm | Photo + ruler (2026-11-28) |
+| Rocker count / type | 1, wide seesaw, centre pivot | Photo |
+| Rocker width x height | about 46 x 92 mm | Photo ratios to the plate |
+| Rocker face protrusion | about 9 mm (plate face about 6 mm) | Side photo + ruler |
+| Clear space | Right side open; door frame close on the left | Photo |
+| Rocker press travel and force | about 3 mm at the ends (est.); force TBD | Bench measurement (U6) |
 
 ## Bench rig (before any wall mounting)
 
-- The bracket and arm are fixed to a board; a dummy rocker (a printed
-  lever on a hinge, spring-loaded) stands in for the real switch so the
-  stroke and force can be measured without the wall.
+- The bracket and arm are fixed to a board; a dummy rocker stands in
+  for the real switch so the stroke and force can be measured without
+  the wall. From v1 the dummy matches the real rocker: 46 x 92 mm
+  paddle, centre pivot, about 3 mm end travel (Issue #13).
 - Push force is measured by pressing the tip against a kitchen scale.
 - A bench-only sketch (`tools/light_servo_bench/`) repeats one press
   cycle every few seconds using the same angles as the firmware, so the
