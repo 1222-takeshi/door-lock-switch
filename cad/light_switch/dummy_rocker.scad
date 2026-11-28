@@ -12,9 +12,12 @@
 //
 // The paddle pivots on an M3 screw (axis along X). A short compression
 // spring (pen-spring class) behind the lower half returns the paddle
-// to its rest tilt. Internal stops limit the tilt to +/- max_tilt,
-// giving about 3.8 mm of travel at the paddle ends - representative of
-// a real rocker; tune stop_y / max_tilt if a target switch differs.
+// to its rest tilt. Internal stops limit the tilt to +/- max_tilt.
+//
+// From 2026-11-28 the paddle matches the measured target switch
+// (design v1, docs/LIGHT_SWITCH.md): a 46 x 92 mm wide rocker with
+// about 3 mm of travel at the ends, hence max_tilt = 4 deg (about
+// 3.2 mm at the ends).
 //
 // Render status: verified with OpenSCAD 2021.01 (Issue #13) - box,
 // paddle and assembled views render as single valid solids.
@@ -22,14 +25,14 @@
 // ---- Parameters ----
 part = "assembled";    // "box", "paddle" or "assembled"
 
-paddle_x = 8;          // paddle centre offset in X (under the arm)
-paddle_w = 36;         // paddle width  (X)
-paddle_h = 44;         // paddle height (Z)
+paddle_x = 14;          // paddle centre offset in X (under the arm)
+paddle_w = 46;         // paddle width  (X)
+paddle_h = 92;         // paddle height (Z)
 paddle_t = 4;          // paddle thickness (Y)
 box_depth = 26;        // box front rim distance from the wall (Y)
 box_wall = 2.5;        // box wall thickness
 pivot_y = 16;          // pivot axis distance from the wall (Y)
-max_tilt = 10;         // paddle tilt limit, degrees
+max_tilt = 4;         // paddle tilt limit, degrees
 spring_z = -14;        // return-spring centre height (below pivot)
 
 $fn = 32;
@@ -93,7 +96,7 @@ module paddle() {
       rotate([-90, 0, 0]) cylinder(h = 3, r = 3.2);
     // Lightening pockets on the back, top and bottom.
     for (sz = [-1, 1])
-      translate([-paddle_w / 2 + 6, -paddle_t / 2 - 1, sz * 13])
+      translate([-paddle_w / 2 + 6, -paddle_t / 2 - 1, sz * 30])
         rotate([-90, 0, 0]) cylinder(h = 3, r = 8);
   }
 }
