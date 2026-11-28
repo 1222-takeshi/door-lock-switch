@@ -37,58 +37,71 @@ TBD are fixed on the bench (U6) or at the wall trial.
 ## Mechanism (v1)
 
 - The servo shaft is horizontal and parallel to the wall, at the height
-  of the rocker centre, about 35 mm out from the wall. The arm plane
-  sits over the rocker edge region (about 20 mm right of centre), where
-  the wide rocker can be pressed reliably.
+  of the rocker centre, about 37 mm out from the wall. The pads cover
+  about 10-21 mm right of the rocker centre, where the wide rocker can
+  be pressed reliably.
+- Placement note: on an SG90 the output shaft is offset from the centre
+  of the body length by about 5 mm (clones differ). The bracket places
+  the body so the shaft lands on the 37 mm design distance
+  (shaft_offset_y in the CAD, to be confirmed on the actual unit).
 - The arm has two spokes at about +/-45 deg from the wall-pointing
   direction, with disc pads at 26 mm radius. A press swings the servo
-  about 11 deg toward one side: that side's pad meets the rocker half
-  at about 15-17 mm from the centre and drives it in (see the stroke
-  budget). Each swing toggles the light; there is no pull-back
+  about 11-15 deg toward one side: that side's pad meets the rocker
+  half at about 15-17 mm from the centre and drives it in (see the
+  stroke budget). Each swing toggles the light; there is no pull-back
   mechanism.
 - At the rest (centre) position both pads clear the rocker face (about
   2.6 mm to the flat face, about 1.4 mm to a fully out-tilted half),
   so manual operation is unobstructed (hard requirement).
 - Firmware parameters: the v0 values (rest 20 deg, push 75 deg in
   `firmware/door_lock.ino`) are superseded by this geometry - centre
-  rest with about +/-11 deg presses, hold 300 ms. The exact angles are
-  set during bench tuning (U6) and updated in the firmware then.
+  rest with about +/-11-15 deg presses, hold 300 ms. The exact angles
+  are set during bench tuning (U6) and updated in the firmware then.
 
 ## Stroke budget (v1)
 
-Geometry: shaft centre 35 mm out from the wall, rocker face at 9 mm,
+Geometry: shaft centre 37 mm out from the wall, rocker face at 9 mm,
 spoke radius R = 26 mm, spokes at +/-45 deg at rest, disc pads of
-radius 5 mm. (The first CAD render showed that a rectangular pad's
-corner would eat the rest clearance; the disc pad and these numbers
-replace the pad-centre estimates of the first v1 draft.)
+radius 5 mm carrying a 2 mm felt layer, i.e. an effective pad radius
+of 7 mm in every figure below. (History: the first v1 draft used a
+rectangular pad and pad-centre math; the first render disproved it,
+and an independent review then caught that the felt layer and the
+servo shaft offset were missing from the budget - both are in now.)
 
-- Rest clearance: the pad's closest point to the wall is
-  35 - (26 * cos(45 deg) + 5) = about 11.6 mm, i.e. about 2.6 mm clear
+- Rest clearance: the pad surface's closest point to the wall is
+  37 - (26 * cos(45 deg) + 7) = about 11.6 mm, i.e. about 2.6 mm clear
   of the flat rocker face and about 1.4 mm clear of a fully out-tilted
   half (face about 10.2 mm at the pad height). Manual operation is
   unobstructed; the gap is fine-tuned with printed shims (1 mm steps),
   not by firmware angles alone.
 - Press: the pad first touches the out-tilted half at a swing of about
-  5 deg and drives it about 1.6 mm by a swing of about 11 deg, which
+  5 deg and drives it about 1.75 mm by a swing of about 11 deg, which
   matches the travel the press point (15-17 mm from the pivot) needs
-  to toggle: about 1.1 mm to flat plus over-travel. The swing is a
-  bench-tuned parameter (U6), so print tolerances and foam-tape
-  thickness land inside the tuning range.
+  to toggle: about 1.1 mm to flat plus over-travel. With 1 mm foam
+  tape under the bracket (shaft at 38 mm) the same travel needs about
+  14 deg. The swing is a bench-tuned parameter (U6, range 11-15 deg),
+  so print tolerances and tape thickness land inside the tuning range.
 - Force estimate: an SG90-class servo is nominally about 1.8 kg cm at
-  4.8 V, giving about 0.69 kg (about 6.8 N) at the 26 mm pad. Wide
-  rockers of this type press with roughly 2-4 N (TBD, measured on the
-  rig), so the margin is about 2x. If the rig shows a shortfall, a
-  shorter spoke variant raises the force at the cost of press margin;
-  re-check the geometry before adopting it.
+  4.8 V, giving about 0.69 kg (about 6.8 N) tangentially at the 26 mm
+  pad; the component normal to the rocker face at the contact angle
+  is about 5.5 N. Wide rockers of this type press with roughly 2-4 N
+  (TBD, measured on the rig), so the margin is about 1.4-2.7x. If the
+  rig shows a shortfall, a shorter spoke variant raises the force at
+  the cost of press margin; re-check the geometry before adopting it.
 
 ## Pusher arm (v1)
 
-- Two-spoke printed arm clamped over the stock servo horn with screws;
-  the spline itself is not printed. Spokes at about +/-45 deg, disc
-  pads (radius 5 mm, 10 mm wide) at 26 mm radius, arm thickness 4 mm,
-  printed on the Adventurer 3 (PLA/PETG for v1).
+- Two-spoke printed arm over the stock servo horn; the spline itself
+  is not printed. The centre screw is the primary fixing, as with
+  stock horns; the hub's servo-side face has a stepped recess
+  (disc-horn pocket and shaft-boss recess) and four diagonal slots
+  for horn screws where the horn provides them. Spokes at about
+  +/-45 deg, disc pads (radius 5 mm, 10 mm wide, flush with the
+  servo-side face) at 26 mm radius, arm thickness 4 mm, printed on
+  the Adventurer 3 (PLA/PETG for v1).
 - Pad faces carry a 2 mm silicone or felt layer: protects the rocker
-  and absorbs over-travel.
+  and absorbs over-travel. The layer is included in the stroke
+  budget above (effective pad radius 7 mm).
 - No mechanical stop is fitted in v1: the wall-bracket layout keeps
   the whole swing region clear of bracket parts, and press depth is
   bounded by the tuned firmware swing (about 11 deg) and the servo's
@@ -102,7 +115,9 @@ replace the pad-centre estimates of the first v1 draft.)
 
 - Primary (v1): removable adhesive strips (re-peelable type) on the flat
   wall beside the switch plate, on the right side (the left side is
-  close to a door frame); bracket back about 60 x 80 mm. Only the servo
+  close to a door frame); bracket back about 60 x 80 mm. The servo is
+  held by two zip ties through slots in the base and shelf, plus an
+  end cheek; gussets stiffen the shelf root. Only the servo
   unit (target under 50 g) sits on the wall; the ESP32 and battery box
   live in a separate case connected by a cable, so battery changes do
   not disturb the mount.
